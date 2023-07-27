@@ -4,23 +4,47 @@ from dotenv import load_dotenv
 import openai
 import os
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import ConversationSerializer
+
+#함수형 뷰. 데코레이터
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny # permission_classes인자에
+# 클래스형 인증
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
+from .models import Conversation
+
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
-class ChatbotView(View):
+class ChatbotView(APIView):
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
+        # conversations 형식
+        ## [{'prompt': '안녕하세요', 'response': '안녕하세요! 무엇을 도와드릴까요?'}, {...}]
         return render(request, 'chat.html', {'conversations': conversations})
 
     def post(self, request, *args, **kwargs):
-        prompt = request.POST.get('prompt')
+        prompt = request.POST.get('prompt') # 내가 입력한 글
         if prompt:
             # 이전 대화 기록 가져오기
             session_conversations = request.session.get('conversations', [])
             previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
+            print(previous_conversations)
             prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
 
+            # prompt_with_previous 들어가는 양식
+            # User: 안녕하세요
+            # AI: 안녕하세요! 무엇을 도와드릴까요?
+            # User: 두번째 안녕하세요
+            # AI: 다시 말씀해주세요. 무엇을 도와드릴까요?
+            # User: 방금입력한거
+            # AI: response
             model_engine = "text-davinci-003"
             completions = openai.Completion.create(
                 engine=model_engine,
@@ -39,3 +63,55 @@ class ChatbotView(View):
             request.session['conversations'] = session_conversations
 
         return self.get(request, *args, **kwargs)
+    
+
+class ChatBotAnswer(APIView):
+    def post(self, request, *args, **kwargs):
+        # prompt = request.SESSION.get('prompt')
+        print(request.POST.get("prompt"))
+        # if prompt:
+        #     session_conversations = request.session.get('conversations', [])
+        #     previous_conversations = "\n".join([f"User: {c['prompt']}\nAI: {c['response']}" for c in session_conversations])
+        #     print(previous_conversations)
+        #     prompt_with_previous = f"{previous_conversations}\nUser: {prompt}\nAI:"
+
+        #     model_engine = "text-davinci-003"
+        #     completions = openai.Completion.create(
+        #         engine=model_engine,
+        #         prompt=prompt_with_previous,
+        #         max_tokens=1024,
+        #         n=5,
+        #         stop=None,
+        #         temperature=0.5,
+        #     )
+        #     response = completions.choices[0].text.strip()
+
+        #     serializer = ConversationSerializer(prompt=prompt, response=response)
+        #     if serializer.is_valid():
+        #         return Response(serializer.data)
+            
+        #     return Response(serializer.errors)
+        return Response()
+        
+        
+
+class DeleteChat(APIView):
+    def post(self, request):
+        pass
+    
+    
+
+# @api_view(['GET'])
+# def hello_rest_api(request):
+#     data = {'message': 'Hello, REST API!'}
+#     return Response(data)
+
+class Test(APIView):
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        data = {'message': 'Hello, REST API!2'}
+        return Response(data)
+
+hello_rest_api = Test.as_view()

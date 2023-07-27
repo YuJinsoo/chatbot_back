@@ -30,7 +30,7 @@ SECRET_KEY = my_setting.Django_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = my_setting.Django_DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -46,6 +46,25 @@ INSTALLED_APPS = [
     "chatbot",
     "account",
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASS': {
+        'rest_framework.throttling.AnonRateThrottle', # 로그인 안한애
+        'rest_framework.throttling.UserRateThrottle',
+    },
+    'DEFAULT_THROTTLE_RATES': {
+        'anon':'5/hour', # sec, min, hour, day
+        'user':'20/hour',
+    },
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [
@@ -114,6 +133,22 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# SESSION
+# 세션 관련해서 어떤 세션 엔진을 사용할 것인지.
+# 일반적으로 서버에서 세션을 저장할때 database에 저장합니다.
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+# 세션의 유지기간
+SESSION_COOKIE_AGE = 86400 # 하루 = 24h * 60m * 60s -> client(browser)
+
+# 사용자가 브라우저 종료 시 세션을 없앨 건지. Ture면 닫을때 세션 삭제
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# server session > client session_id. 세션이 만료가 되어도 db에 저장된 세션은 사라지지않습니다. 이런 세션들이 마구 쌓이면 부하가 걸릴 것입니다. 
+# 그래서 서버 쪽에서 세션을 지워줄 필요가 있습니다.
+# 근데 만료된것만 지우는게 아니라 다 삭제됨
+# python manage.py clearsessions -> corn (crontab) : 스케쥴 설정 가능
 
 
 # Internationalization
