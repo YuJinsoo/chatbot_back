@@ -41,9 +41,14 @@ class Account(AbstractUser):
     last_login = models.DateField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     
-    is_disabled = models.BooleanField(default=False)
+    # User 모델의 필수 field, is_active, is_superuser
+    is_active = models.BooleanField(default=True)    
+    
+    objects = AccountManager()
     
     USERNAME_FIELD = 'email'
     EMAIL_FILED = 'email'
     REQUIRED_FIELDS = []
-    objects = AccountManager()
+    
+    def __str__(self):
+        return f"email : {self.email}"

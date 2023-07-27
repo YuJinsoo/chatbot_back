@@ -11,14 +11,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .serializers import AccountSerializer
 
 
+class Registration(APIView):
+    pass
+
+
 class Login(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
         if request.user.is_authenticated:
             return Response({'message':'you already login'})
         
-        # serializer = AccountSerializer(data=request.data)
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        user = authenticate(username=request.POST['email'], password=request.POST['password'])
         
         if user :
             login(request, user)
@@ -29,8 +32,8 @@ class Login(APIView):
         
 class Logout(APIView):
     permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         serializer = AccountSerializer(request.user)
         logout(request)
-        # return redirect('blog:list')
         return Response(serializer.data)
