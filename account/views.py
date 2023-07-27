@@ -11,12 +11,33 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .serializers import AccountSerializer
 
 
-class Registration(APIView):
-    pass
+class CreateUser(APIView):
+    # permission_classes = [AllowAny]
+    def get(self, request):
+        serializer = AccountSerializer()
+        return Response({'message': 'here'})
+    
+    def post(self, request):
+        serializer = AccountSerializer(data=request.POST)
+        print(serializer)
+        
+        if serializer.is_valid():
+            print('valid!!')
+            print(serializer.data)
+            
+            new_user = serializer.create(serializer.validated_data)
+            new_user.save()
+            return Response(new_user)
+
+        return Response({'message': 'hihi'})
 
 
 class Login(APIView):
     permission_classes = [AllowAny]
+    
+    def get(self, request):
+        return Response()
+
     def post(self, request):
         if request.user.is_authenticated:
             return Response({'message':'you already login'})
