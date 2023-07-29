@@ -92,6 +92,30 @@ CORS_ALLOWED_ORIGINS = [
 ]
 # CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://\w+\.example\.com$",]
 # CORS_ALLOW_ALL_ORIGINS = True or False
+###
+# CORS_ALLOW_METHODS = [  # 허용할 옵션
+#     "DELETE",
+#     "GET",
+#     "OPTIONS",
+#     "PATCH",
+#     "POST",
+#     "PUT",
+# ]
+
+# CORS_ALLOW_HEADERS = [ # 허용할 헤더
+#     "accept",
+#     "accept-encoding",
+#     "authorization",
+#     "content-type",
+#     "dnt",
+#     "origin",
+#     "user-agent",
+#     "x-csrftoken",
+#     "x-requested-with",
+#     # "my-header", # api요청 헤더에 추가한 것을 여기에 추가하면 읽어올 수 있습니다.
+# ]
+# CORS_ALLOW_CREDENTIALS = True
+
 
 ROOT_URLCONF = "chatbot_project.urls"
 

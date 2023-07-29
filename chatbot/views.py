@@ -137,10 +137,14 @@ class Test(APIView):
     permission_classes = [AllowAny]
     
     def get(self, request):
-        data = {'message': 'Hello, REST API!2'}
+        data = {'message': 'Hello, REST API!!'}
         return Response(data)
     
     def post(self, request):
+        # print(request.META.keys())
+        # 이 값을 settings의 CORS_ALLOWED_ORIGINS 에 추가하면 새로운 접속자도 가능하겠네요! 
+        print(request.META.get("HTTP_ORIGIN"))
+        print(request.META.get("HTTP_MY_HEADER")) # 헤더에 추가한 내용은 request.META에서 HTTP_대문자~~로 읽어올 수 있습니다.
         data = {"message": "post request"}
         return Response(data)
 

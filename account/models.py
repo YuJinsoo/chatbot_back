@@ -5,8 +5,11 @@ from django.utils import timezone
 
 class AccountManager(BaseUserManager):
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
-        if not email:
+        if email is None:
             raise ValueError('User must have an email')
+        
+        if password is None:
+            raise TypeError('Users must have a password.')
         now = timezone.now() # 현재시간 -> UTC
         # now = timezone.localtime() # 현재 위치 시간으로 기록됨
         email = self.normalize_email(email)

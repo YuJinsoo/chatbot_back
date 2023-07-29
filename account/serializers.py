@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from django.utils import timezone
+
 from .models import Account
 
 
@@ -15,3 +18,9 @@ class AccountSerializer(serializers.ModelSerializer):
             name = validated_data['name']
         )
         return user
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = Account
+        fields = ['email', 'password', 'last_login']
