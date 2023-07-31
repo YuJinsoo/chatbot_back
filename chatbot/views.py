@@ -23,8 +23,6 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 class ChatbotView(APIView):
-    
-    
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
         # conversations 형식
@@ -82,7 +80,6 @@ class ChatBotAnswer(APIView):
         ## [{'prompt': '안녕하세요', 'response': '안녕하세요! 무엇을 도와드릴까요?'}, {...}]
         return Response({'conversations': conversations})
 
-    
     def post(self, request, *args, **kwargs):
         print(request.POST)
         print(hasattr(request, "SESSION")) #False

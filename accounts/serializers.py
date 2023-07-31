@@ -8,14 +8,13 @@ from .models import Account
 class AccountSerializer(serializers.ModelSerializer):
     class Meta():
         model = Account
-        fields = ['email', 'password', 'name']
+        fields = '__all__'
         
     
     def create(self, validated_data):
         user = Account.objects.create_user(
             email = validated_data['email'],
             password = validated_data['password'],
-            name = validated_data['name']
         )
         return user
 
@@ -23,4 +22,4 @@ class AccountSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     class Meta():
         model = Account
-        fields = ['email', 'password', 'last_login']
+        fields = ['email', 'password']
