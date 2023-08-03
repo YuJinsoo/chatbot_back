@@ -11,7 +11,6 @@ from .serializers import ConversationSerializer
 
 #함수형 뷰. 데코레이터
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny # permission_classes인자에
 # 클래스형 인증
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -129,9 +128,8 @@ class DeleteChat(APIView):
 #     return Response(data)
 
 class Test(APIView):
-    # authentication_classes = [TokenAuthentication]
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
     
     def get(self, request):
         data = {'message': 'Hello, REST API!!'}
