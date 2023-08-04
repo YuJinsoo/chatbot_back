@@ -20,6 +20,7 @@ from .serializers import AccountSerializer, LoginSerializer
 ## auth를 확장된 모델을 가져오게 됩니다.
 Account = get_user_model()
 
+
 class CreateUser(APIView):
     permission_classes = [AllowAny]
     
