@@ -2,11 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model
 from django.db.models import Q
 
-# import jwt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BaseAuthentication, TokenAuthentication
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework import generics
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
@@ -15,33 +14,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chatbot_project import my_setting
 
-from .serializers import AccountSerializer, LoginSerializer
+from .serializers import RegisterSerializer
 
 ## auth를 확장된 모델을 가져오게 됩니다.
 Account = get_user_model()
-
-
-class CreateUser(APIView):
-    permission_classes = [AllowAny]
-    
-    def get(self, request):
-        serializer = AccountSerializer()
-        return Response({'message': 'here'})
-    
-    def post(self, request):
-        serializer = AccountSerializer(data=request.POST)
-        print(serializer)
-        
-        if serializer.is_valid():
-            print('valid!!')
-            print(serializer.data)
-            
-            new_user = serializer.create(serializer.validated_data)
-            new_user.save()
-            print(new_user)
-            return Response({'register': 'sueccess'}, status=status.HTTP_200_OK)
-
-        return Response({'message': 'hihi'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Login(APIView):
@@ -55,15 +31,18 @@ class Login(APIView):
         if request.user.is_authenticated:
             return Response({'message':'you already login'})
         
+        
+        print(request.query_params)
+        print(request.parsers)
         print('post1')
-        print(request.data)
+        print(request.data) # QueryDict
         print('post2')
         # print(request.POST['email'])
         # print(dict(request.data))
         email = request.POST['email']
         pw = request.POST['password']
         user = Account.objects.filter(email=email)
-        print(user)
+        print(user) # QuerySet
         
         if user:
             user = authenticate(request, username=email, password=pw)
@@ -84,38 +63,46 @@ class Logout(APIView):
         # if not request.user.is_authenticated:
         #     return Response({'message':'you are not login'})
         
-        serializer = AccountSerializer(request.user)
+        # serializer = AccountSerializer(request.user)
         logout(request)
         return Response({'message': 'logout success'}, status=status.HTTP_200_OK)
     
 
+class RegisterView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Account.objects.all()
+    serializer_class = RegisterSerializer
+
+
 ### 
 
 class RegisterAPIView(APIView):
-    def post(self, request):
-        serializer = AccountSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
+    def post(self, requset):
+        return Response({"bye": "bye"})
+#     def post(self, request):
+#         # serializer = AccountSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save()
             
-            #jwt 토큰 접근
-            token = TokenObtainPairSerializer.get_token(user)
-            refresh_token = str(token)
-            access_token = str(token.access_token)
-            res = Response({
-                "user": serializer.data,
-                "message": "register success",
-                "token": {
-                    "access": access_token,
-                    "refresh": refresh_token,
-                },
-            }, status=status.HTTP_200_OK,)
+#             #jwt 토큰 접근
+#             token = TokenObtainPairSerializer.get_token(user)
+#             refresh_token = str(token)
+#             access_token = str(token.access_token)
+#             res = Response({
+#                 "user": serializer.data,
+#                 "message": "register success",
+#                 "token": {
+#                     "access": access_token,
+#                     "refresh": refresh_token,
+#                 },
+#             }, status=status.HTTP_200_OK,)
             
-            # jwt토큰 => 쿠키에 저장
-            res.set_cookie("access", access_token, httponly=True)
-            res.set_cookie("refresh", refresh_token, httponly=True)
+#             # jwt토큰 => 쿠키에 저장
+#             res.set_cookie("access", access_token, httponly=True)
+#             res.set_cookie("refresh", refresh_token, httponly=True)
             
-            return res
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#             return res
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 #     # 시리얼라이저를 사용해서 유저를 저장하고(=회원가입), jwt 토큰을 받아서 쿠키에 저장한다. 쿠키에 저장할 때 httponly=True 속성을 줬는데, 이는 JavaScript로 쿠키를 조회할 수 없게 하기 위한 것이다. 따라서 XSS로부터 안전해지는데, 대신 CSRF로부터 취약해져서 CSRF 토큰을 같이 사용해야 한다.
 
 

@@ -128,10 +128,15 @@ class DeleteChat(APIView):
 #     return Response(data)
 
 class Test(APIView):
-    permission_classes = [IsAuthenticated]
-    # permission_classes = [AllowAny]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     
     def get(self, request):
+        
+        print(request.query_params)
+        # url = "http://127.0.0.1:8000/api/chatbot/test?name=very&a=10"
+        # <QueryDict: {'name': ['very'], 'a': ['10']}>
+        
         data = {'message': 'Hello, REST API!!'}
         return Response(data)
     

@@ -11,11 +11,11 @@ from .models import Account
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True, validator=[UniqueValidator(queryset=Account.objects.all())])
+    email = serializers.EmailField(required=True, validators=[UniqueValidator(queryset=Account.objects.all())])
     
-    password = serializers.CharField(write_only=True, required=True, validator=[validate_password])
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     
-    password2 = serializers.CharField(write_only=True,required=True, validator=[validate_password])
+    password2 = serializers.CharField(write_only=True,required=True, validators=[validate_password])
     
     class Meta():
         model = Account
