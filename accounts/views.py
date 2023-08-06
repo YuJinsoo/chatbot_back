@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from chatbot_project import my_setting
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, LoginSerializer
 
 ## auth를 확장된 모델을 가져오게 됩니다.
 Account = get_user_model()
@@ -73,6 +73,16 @@ class RegisterView(generics.CreateAPIView):
     queryset = Account.objects.all()
     serializer_class = RegisterSerializer
 
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True) # 유효성 검사
+        token = serializer.validated_data
+        return Response({'Token': token.key}, status=status.HTTP_200_OK)
+        
 
 ### 
 
