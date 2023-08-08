@@ -9,6 +9,7 @@ from rest_framework import generics
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
+from rest_framework.authtoken.models import Token # 토큰 모델
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -54,8 +55,8 @@ class Login(APIView):
                 return Response({'message':'login success!'}, status=status.HTTP_200_OK)
         
         return Response({'message':'login failed. wrong id or password'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
+
+
 class Logout(APIView):
     # permission_classes = [IsAuthenticated]
     
@@ -66,12 +67,25 @@ class Logout(APIView):
         # serializer = AccountSerializer(request.user)
         logout(request)
         return Response({'message': 'logout success'}, status=status.HTTP_200_OK)
-    
+
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     queryset = Account.objects.all()
     serializer_class = RegisterSerializer
+
+
+### RegisterView를 APIView로 개발.
+class SignupView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        user = Account.objects.create(email=request.data['email'], password=request.data['password'])
+        
+        user.save()
+        
+        token = Token.objects.create(acoount=user)
+        return Response({'Token': token.key})
 
 
 class LoginView(APIView):
@@ -80,9 +94,34 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True) # 유효성 검사
+        # serializer에서 선언한 validate()호출?
         token = serializer.validated_data
         return Response({'Token': token.key}, status=status.HTTP_200_OK)
+
+
+class LogoutView(APIView):
+    permission_classes=[IsAuthenticated]
+    
+    def post(self, request):
+        print(request.data)
+        print(request.user)
+        print(request.user.is_authenticated)
+        print(request.user.is_anonymous)
         
+        token = request.headers.get('Authorization', None)
+        print(token)
+        
+        if token:
+            print('token avail!')
+            try:
+                token_key = token.split()[1]
+                token = Token.objects.get(key=token_key)
+                print('사용자:', token.user.email, '로그아웃!')
+                # user = token.user
+                return Response({'logout':'true'})
+            except:
+                return Response({'error': 'Token is inavalid'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'logout':'true'}, status=status.HTTP_400_BAD_REQUEST)
 
 ### 
 
