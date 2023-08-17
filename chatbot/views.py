@@ -80,10 +80,13 @@ class ChatBotAnswer(APIView):
         return Response({'conversations': conversations})
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
+        print(request)
+        print(request.POST) # <QueryDict: {}>
+        print(request.data) # {'prompt': 'world'}
+        # print(request.method) #POST
         print(hasattr(request, "SESSION")) #False
         
-        prompt = request.POST['prompt']
+        prompt = request.POST.get('prompt')
         print(prompt)
         if prompt:
             session_conversations = request.session.get('conversations', [])
@@ -128,11 +131,10 @@ class DeleteChat(APIView):
 #     return Response(data)
 
 class Test(APIView):
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    # permission_classes = [AllowAny]
     
     def get(self, request):
-        
         print(request.query_params)
         # url = "http://127.0.0.1:8000/api/chatbot/test?name=very&a=10"
         # <QueryDict: {'name': ['very'], 'a': ['10']}>
@@ -144,7 +146,7 @@ class Test(APIView):
         # print(request.META.keys())
         # 이 값을 settings의 CORS_ALLOWED_ORIGINS 에 추가하면 새로운 접속자도 가능하겠네요! 
         print(request.META.get("HTTP_ORIGIN"))
-        print(request.META.get("HTTP_MY_HEADER")) # 헤더에 추가한 내용은 request.META에서 HTTP_대문자~~로 읽어올 수 있습니다.
+        # print(request.META.get("HTTP_MY_HEADER")) # 헤더에 추가한 내용은 request.META에서 HTTP_대문자~~로 읽어올 수 있습니다.
         data = {"message": "post request"}
         return Response(data)
 
