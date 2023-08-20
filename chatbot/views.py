@@ -82,11 +82,14 @@ class ChatBotAnswer(APIView):
     def post(self, request, *args, **kwargs):
         print(request)
         print(request.POST) # <QueryDict: {}>
-        print(request.data) # {'prompt': 'world'}
+        print(request.data) # {'prompt': 'world'} 타입 dict
         # print(request.method) #POST
+        print(hasattr(request, "session")) #True
         print(hasattr(request, "SESSION")) #False
+        print(request.session)
         
-        prompt = request.POST.get('prompt')
+        # prompt = request.POST.get('prompt')
+        prompt = request.data.get('prompt')
         print(prompt)
         if prompt:
             session_conversations = request.session.get('conversations', [])
@@ -109,9 +112,18 @@ class ChatBotAnswer(APIView):
             response = completions.choices[0].text.strip()
             print(response)
 
-            serializer = ConversationSerializer(prompt=prompt, response=response)
+            # 시리얼라이저에는 QueryDict? 즉 django orm 오브젝트가 들어가야함
+            # conv = Conversation(prompt=prompt, response=response)
+            # serializer = ConversationSerializer(conv)
+            
+            # data로는 dictionary 로 넣어줄 수 있습니다.
+            serializer = ConversationSerializer(data={"prompt":prompt, "response": response})
+            print(serializer)
+            
+            # serializer를 생성할 때 data로 생성하지 않으면 호출불가함.
             if serializer.is_valid():
                 print('valid!')
+                # TODO db에 저장하는 것 필요함
                 return Response(serializer.data)
             
             return Response(serializer.errors)
