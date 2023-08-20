@@ -80,13 +80,12 @@ class ChatBotAnswer(APIView):
         return Response({'conversations': conversations})
 
     def post(self, request, *args, **kwargs):
-        print(request)
-        print(request.POST) # <QueryDict: {}>
-        print(request.data) # {'prompt': 'world'} 타입 dict
+        # print(request.POST) # <QueryDict: {}>
+        # print(request.data) # {'prompt': 'world'} 타입 dict
         # print(request.method) #POST
-        print(hasattr(request, "session")) #True
-        print(hasattr(request, "SESSION")) #False
-        print(request.session)
+        # print(hasattr(request, "session")) #True
+        # print(hasattr(request, "SESSION")) #False
+        # print(request.session)
         
         # prompt = request.POST.get('prompt')
         prompt = request.data.get('prompt')
@@ -123,6 +122,7 @@ class ChatBotAnswer(APIView):
             # serializer를 생성할 때 data로 생성하지 않으면 호출불가함.
             if serializer.is_valid():
                 print('valid!')
+                print(request.user)
                 # TODO db에 저장하는 것 필요함
                 return Response(serializer.data)
             
