@@ -22,6 +22,8 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
 class ChatbotView(APIView):
+    permission_classes = [AllowAny]
+    
     def get(self, request, *args, **kwargs):
         conversations = request.session.get('conversations', [])
         # conversations 형식
@@ -111,7 +113,7 @@ class ChatBotAnswer(APIView):
             response = completions.choices[0].text.strip()
             print(response)
 
-            # 시리얼라이저에는 QueryDict? 즉 django orm 오브젝트가 들어가야함
+            # 시리얼라이저에는 QuerySet? 즉 django orm 오브젝트가 들어가야함
             # conv = Conversation(prompt=prompt, response=response)
             # serializer = ConversationSerializer(conv)
             
