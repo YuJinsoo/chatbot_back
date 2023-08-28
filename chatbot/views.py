@@ -15,7 +15,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
-from .models import Conversation
+from .models import Conversation, ChatRoom
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -137,6 +137,27 @@ class DeleteChat(APIView):
     def post(self, request):
         pass
     
+
+## 방 생성
+class CreateChatRoom(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        pass
+        
+
+## 방 내용 확인
+class DetailChatRoom(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        pass
+        
+
+## 방 삭제
+class DeleteChatRoom(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        pass
     
 
 # @api_view(['GET'])
