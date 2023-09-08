@@ -7,7 +7,7 @@ import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ConversationSerializer
+from .serializers import ConversationSerializer, ChatRoomSerializer
 
 #함수형 뷰. 데코레이터
 from rest_framework.decorators import api_view, permission_classes
@@ -136,22 +136,34 @@ class ChatBotAnswer(APIView):
 class DeleteChat(APIView):
     def post(self, request):
         pass
-    
+
 
 ## 방 생성
 class CreateChatRoom(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
+        serializer = ChatRoomSerializer()
+        if serializer.is_valid():
+            chatroom = serializer.create()
+            chatroom.save()
+            return Response({'message': 'create chatroom!'}, status=status.HTTP_200_OK)
+        return Response({'message': 'fail to create chatroom'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+## 방 조회
+class DetailChatRoom(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, roomid):
         pass
-        
+
 
 ## 방 내용 확인
 class DetailChatRoom(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         pass
-        
+
 
 ## 방 삭제
 class DeleteChatRoom(APIView):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Conversation
+from .models import Conversation, ChatRoom
 
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -14,3 +14,16 @@ class ConversationSerializer(serializers.ModelSerializer):
         )
         
         return conversation
+
+
+class ChatRoomSerializer(serializers.ModelSerializer):
+    class Meta():
+        model = ChatRoom
+        fields = '__all__'
+    
+    def create(self, validated_data, user):
+        obj = ChatRoom.objects.create(
+            creator = user,
+            title = validated_data['title']
+        )
+        return obj
