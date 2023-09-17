@@ -141,9 +141,13 @@ class DeleteChat(APIView):
 ## 방 생성
 class CreateChatRoom(APIView):
     permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         user = request.user
-        serializer = ChatRoomSerializer()
+        serializer = ChatRoomSerializer(data={
+            'creator': user,
+            'title': request.data['title']
+        })
         if serializer.is_valid():
             chatroom = serializer.create()
             chatroom.save()
@@ -154,6 +158,7 @@ class CreateChatRoom(APIView):
 ## 방 조회
 class DetailChatRoom(APIView):
     permission_classes = [AllowAny]
+    
     def get(self, request, roomid):
         pass
 
